@@ -1,4 +1,4 @@
-PREFIX='/usr/local'
+PREFIX=/usr/local
 
 all: server client
 
@@ -9,11 +9,12 @@ client:
 	go build litbit.go
 
 install:
-	install -D litbit-server ${PREFIX}/bin
-	install -D litbit ${PREFIX}/bin
-	install -D -m 644 litbit-server.service /usr/lib/systemd/system
-	install -D -m 644 litbit.service /usr/lib/systemd/service
-	install -D www/* ${PREFIX}/share/litbit/www
+	install -D litbit-server ${PREFIX}/bin/litbit-server
+	install -D litbit ${PREFIX}/bin/litbit
+	install -D -m 644 litbit-server.service /usr/lib/systemd/system/litbit-server.service
+	install -D -m 644 litbit.service /usr/lib/systemd/system/litbit.service
+	install -d ${PREFIX}/share/litbit/www
+	install www/* ${PREFIX}/share/litbit/www
 
 clean:
 	@rm -f litbit-server
