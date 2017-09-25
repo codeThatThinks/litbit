@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DJ Raspie</title>
+</head>
+<body>
+	<h1>DJ Raspie</h1>
+	<p>Please enter a YouTube URL to keep the party goin.</p>
+	<form action="/{{.Id}}/add" method="post">
+		<input type="text" name="url" />
+		<button type="submit">Add Song</button>
+	</form>
+</body>
+</html>

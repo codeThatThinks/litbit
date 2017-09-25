@@ -1,0 +1,5 @@
+[Service]
+Type=simple
+ExecStart=/usr/local/litbit-server
+User=root
+WorkingDirectory=/usr/local/share/litbit/
