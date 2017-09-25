@@ -10,10 +10,36 @@ import (
 	"os/exec"
 	"io/ioutil"
 	"strings"
+	"syscall"
+	"os"
+	"os/signal"
 )
 
 var id_length = 4
 var server_base_url = "http://litbit.in"
+var device_id string
+
+func handleExit() {
+	channel := make(chan os.Signal, 2)
+	signal.Notify(channel,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGTSTP,
+		syscall.SIGTTIN,
+		syscall.SIGTTOU,
+		syscall.SIGKILL,
+		syscall.SIGSTOP,
+	)
+
+	go func() {
+		<- channel
+
+		http.Get(server_base_url + "/" + device_id + "/unregister")
+		fmt.Printf("\n");
+		os.Exit(0)
+	}()
+}
 
 func GenerateDeviceId() string {
 	rand.Seed(time.Now().UTC().UnixNano())
@@ -28,7 +54,7 @@ func GenerateDeviceId() string {
 func main() {
 	registered := false
 
-	device_id := ""
+	device_id = ""
 
 	for !registered {
 		// gen unique id
@@ -45,6 +71,7 @@ func main() {
 		}
 	}
 
+	handleExit()
 	fmt.Printf("Go to %s/%s to request songs\n", server_base_url, device_id)
 
 	for true {
@@ -64,7 +91,4 @@ func main() {
 			}
 		}
 	}
-	
-
-	http.Get(server_base_url + "/" + device_id + "/unregister")
 }
