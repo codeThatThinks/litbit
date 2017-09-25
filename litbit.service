@@ -1,5 +1,12 @@
+[Unit]
+Description=Play songs requested via the LitBit web app
+
 [Service]
 Type=simple
-ExecStart=/usr/local/litbit
+ExecStart=/usr/local/bin/litbit
 User=root
 WorkingDirectory=/usr/local/share/litbit/
+
+[Install]
+Wants=network.target
+WantedBy=multi-user.target

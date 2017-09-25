@@ -1,5 +1,12 @@
+[Unit]
+Description=Run the LitBit web app
+
 [Service]
 Type=simple
-ExecStart=/usr/local/litbit-server
+ExecStart=/usr/local/bin/litbit-server
 User=root
 WorkingDirectory=/usr/local/share/litbit/
+
+[Install]
+Wants=network.target
+WantedBy=multi-user.target
