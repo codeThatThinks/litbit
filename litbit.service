@@ -1,7 +1,5 @@
 [Unit]
 Description=Play songs requested via the LitBit web app
-BindsTo=sys-subsystem-net-devices-wlan0.device
-After=sys-subsystem-net-devices-wlan0.device
 
 [Service]
 Type=simple
@@ -10,6 +8,4 @@ User=root
 WorkingDirectory=/usr/local/share/litbit/
 
 [Install]
-Wants=network-online.target
-After=network-online.target
 WantedBy=multi-user.target

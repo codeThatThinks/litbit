@@ -95,13 +95,20 @@ func main() {
 		device_id = GenerateDeviceId()
 
 		// try to register
-		resp, err := http.Get(server_base_url + "/" + device_id + "/register")
-		if err != nil {
-			panic(err)
+		var resp *http.Response
+		var err error
+		resp, err = http.Get(server_base_url + "/" + device_id + "/register")
+		for err != nil {
+			fmt.Printf("Error: %s\n", err)
+			fmt.Printf("Retrying...\n")
+			resp, err = http.Get(server_base_url + "/" + device_id + "/register")
 		}
 
 		if resp.StatusCode == 200 {
 			registered = true
+		} else if resp.StatusCode != 403 {
+			fmt.Printf("Error: Recieved status code %i when trying to register", resp.StatusCode)
+			os.Exit(1)
 		}
 	}
 
@@ -112,10 +119,15 @@ func main() {
 	fmt.Printf("Go to %s/%s to request songs\n", server_base_url, device_id)
 
 	for !shouldQuit {
-		resp, err := http.Get(server_base_url + "/" + device_id + "/get")
-		if err != nil {
-			panic(err)
+		var resp *http.Response
+		var err error
+		resp, err = http.Get(server_base_url + "/" + device_id + "/get")
+		for err != nil {
+			fmt.Printf("Error: %s\n", err)
+			fmt.Printf("Retrying...\n")
+			resp, err = http.Get(server_base_url + "/" + device_id + "/get")
 		}
+
 		if resp.StatusCode == 200 {
 			// play the song
 			urlb, _ := ioutil.ReadAll(resp.Body)
