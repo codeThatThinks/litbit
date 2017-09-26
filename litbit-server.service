@@ -8,5 +8,6 @@ User=root
 WorkingDirectory=/usr/local/share/litbit/
 
 [Install]
-Wants=network.target
+Wants=network-online.target
+After=network-online.target
 WantedBy=multi-user.target
