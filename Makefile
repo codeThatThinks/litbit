@@ -14,6 +14,7 @@ install:
 	install -D -m 644 litbit-server.service /usr/lib/systemd/system/litbit-server.service
 	install -D -m 644 litbit.service /usr/lib/systemd/system/litbit.service
 	install -d ${PREFIX}/share/litbit/www
+	install vlc.sh ${PREFIX}/share/litbit/www
 	install www/* ${PREFIX}/share/litbit/www
 
 clean:
