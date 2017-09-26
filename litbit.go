@@ -133,11 +133,8 @@ func main() {
 			urlb, _ := ioutil.ReadAll(resp.Body)
 			url := strings.TrimSpace(string(urlb))
 			fmt.Printf("Playing %s\n", url)
-			command := exec.Command("/bin/sh", "/usr/local/share/litbit/vlc.sh", url)
-			err := command.Run()
-			if err != nil {
-				panic(err)
-			}
+			command := exec.Command("/bin/sh", "vlc.sh", url)
+			_ = command.Run()
 		}
 	}
 
