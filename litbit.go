@@ -13,11 +13,22 @@ import (
 	"syscall"
 	"os"
 	"os/signal"
+	"github.com/xdsopl/framebuffer/src/framebuffer"
+	"image"
+	"image/draw"
+	"image/color"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font/gofont/gomedium"
+	"golang.org/x/image/math/fixed"
+	"github.com/golang/freetype"
 )
 
 var id_length = 4
 var server_base_url = "http://litbit.in"
 var device_id string
+var fb draw.Image
+var shouldQuit = false
 
 func handleExit() {
 	channel := make(chan os.Signal, 2)
@@ -34,11 +45,34 @@ func handleExit() {
 
 	go func() {
 		<- channel
-
-		http.Get(server_base_url + "/" + device_id + "/unregister")
-		fmt.Printf("\n");
-		os.Exit(0)
+		shouldQuit = true
 	}()
+}
+
+func DrawMessage() {
+	ClearScreen()
+
+	context := freetype.NewContext()
+	context.SetDst(fb)
+	context.SetSrc(&image.Uniform{color.RGBA{255, 255, 255, 255}})
+	context.SetDPI(170)
+	context.SetHinting(font.HintingFull)
+	context.SetClip(fb.Bounds())
+	goregular, _ := freetype.ParseFont(goregular.TTF)
+	gomedium, _ := freetype.ParseFont(gomedium.TTF)
+
+	context.SetFontSize(11)
+	context.SetFont(goregular)
+	context.DrawString("Go to", fixed.P(fb.Bounds().Min.X + 125, fb.Bounds().Min.Y + 80))
+	context.DrawString("to keep the party goin", fixed.P(fb.Bounds().Min.X + 40, fb.Bounds().Min.Y + 170))
+
+	context.SetFontSize(13)
+	context.SetFont(gomedium)
+	context.DrawString(server_base_url + "/" + device_id, fixed.P(fb.Bounds().Min.X + 20, fb.Bounds().Min.Y + 125))
+}
+
+func ClearScreen() {
+	draw.Draw(fb, fb.Bounds(), &image.Uniform{color.RGBA{0, 0, 0, 255}}, image.ZP, draw.Src)
 }
 
 func GenerateDeviceId() string {
@@ -71,10 +105,13 @@ func main() {
 		}
 	}
 
+	fb, _ = framebuffer.Open("/dev/fb1")
 	handleExit()
+
+	DrawMessage()
 	fmt.Printf("Go to %s/%s to request songs\n", server_base_url, device_id)
 
-	for true {
+	for !shouldQuit {
 		resp, err := http.Get(server_base_url + "/" + device_id + "/get")
 		if err != nil {
 			panic(err)
@@ -91,4 +128,8 @@ func main() {
 			}
 		}
 	}
+
+	http.Get(server_base_url + "/" + device_id + "/unregister")
+	fmt.Printf("\n");
+	ClearScreen()
 }
