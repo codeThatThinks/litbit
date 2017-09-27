@@ -1,4 +1,4 @@
 *.sublime-project
 *.sublime-workspace
-litbit-server
-litbit
+server/litbit-server
+client/litbit
